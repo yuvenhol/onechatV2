@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	var address = flag.String("add", "127.0.0.1:9002", "TCP listening address")
+	var address = flag.String("add", "81.70.19.173:5211", "TCP listening address")
 	var username = flag.String("u", "default", "username")
 	flag.Parse()
 
@@ -36,7 +36,7 @@ func main() {
 	domain.SendReq(domain.ENTER, *username, conn)
 	log.Println("logined")
 	//先查询一次在线
-	go domain.SendReq(domain.COMMAND, "\\who", conn)
+	// domain.SendReq(domain.COMMAND, "\\who", conn)
 	//控制台交互
 	ReadConsole(conn)
 }

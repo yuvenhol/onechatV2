@@ -60,7 +60,7 @@ func Parse2Req(frame []byte) *REQ {
 	req := &REQ{}
 	b := security.AesDecrypt(frame)
 	if json.Unmarshal(b, req) != nil {
-		log.Fatalln("json解析异常")
+		log.Println("json解析异常")
 	}
 	return req
 }
@@ -69,7 +69,7 @@ func Parse2Req(frame []byte) *REQ {
 func Parse2ACK(frame []byte) *ACK {
 	ack := &ACK{}
 	if json.Unmarshal(security.AesDecrypt(frame), ack) != nil {
-		log.Fatalln("json解析异常")
+		log.Println("json解析异常")
 	}
 	return ack
 }

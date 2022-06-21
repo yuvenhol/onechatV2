@@ -38,6 +38,9 @@ func (ocs *OneChatServer) OnClosed(c gnet.Conn, err error) (action gnet.Action) 
 //给其他在线用户发消息
 func (ocs *OneChatServer) React(frame []byte, c gnet.Conn) (out []byte, action gnet.Action) {
 	req := domain.Parse2Req(frame)
+	if req == nil {
+		return
+	}
 	log.Printf("发送内容:%+v", req)
 	service(req, c)
 	return
@@ -75,9 +78,10 @@ func clearSession(c gnet.Conn) {
 //处理聊天
 func handleTalk(req *domain.REQ, c gnet.Conn) {
 	sessionId := c.Context().(uint32)
+	senderSession := sessionMap[sessionId]
 	for k, v := range sessionMap {
 		if k != sessionId {
-			domain.SendAck(v.username, req.Content, v.con)
+			domain.SendAck(senderSession.username, req.Content, v.con)
 		}
 	}
 }

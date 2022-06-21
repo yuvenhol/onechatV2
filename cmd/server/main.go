@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"onechat/server"
 
@@ -8,6 +9,12 @@ import (
 )
 
 func main() {
+	defer func() {
+		if err := recover(); err != nil {
+
+			fmt.Println("catch error ", err)
+		}
+	}()
 	onechat := new(server.OneChatServer)
-	log.Fatal(gnet.Serve(onechat, "tcp://127.0.0.1:9002", gnet.WithMulticore(false)))
+	log.Fatal(gnet.Serve(onechat, "tcp://:5211", gnet.WithMulticore(false)))
 }
