@@ -13,6 +13,6 @@ type OneChatClient struct {
 
 func (occ *OneChatClient) React(content []byte, c gnet.Conn) (out []byte, action gnet.Action) {
 	a := domain.Parse2ACK(content)
-	log.Println(a.Username + ">" + a.Content)
+	log.Println(a.Username + "->" + a.Content)
 	return
 }

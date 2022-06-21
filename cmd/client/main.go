@@ -31,8 +31,12 @@ func main() {
 		return
 	}
 	defer conn.Close()
+	log.Println("wecome to onechat :) ")
 	//登录
 	domain.SendReq(domain.ENTER, *username, conn)
+	log.Println("logined")
+	//先查询一次在线
+	go domain.SendReq(domain.COMMAND, "\\who", conn)
 	//控制台交互
 	ReadConsole(conn)
 }
@@ -46,9 +50,18 @@ func ReadConsole(con gnet.Conn) {
 		if err != nil {
 			break
 		}
-		// 去掉读入内容的空白符
+		//滤掉空数据
 		text = strings.TrimSpace(text)
-		domain.SendReq(domain.TALK, text, con)
+		if len(text) == 0 {
+			continue
+		}
+		//默认对话行为
+		action := domain.TALK
+		//命令行为
+		if strings.HasPrefix(text, "\\") {
+			action = domain.COMMAND
+		}
+		domain.SendReq(action, text, con)
 	}
 
 }
