@@ -16,3 +16,8 @@ func (occ *OneChatClient) React(content []byte, c gnet.Conn) (out []byte, action
 	log.Println(a.Username + "->" + a.Content)
 	return
 }
+
+func (es *OneChatClient) OnClosed(c gnet.Conn, err error) (action gnet.Action) {
+	log.Fatalln("connect is closed")
+	return
+}
