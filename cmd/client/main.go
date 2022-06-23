@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	var address = flag.String("add", "81.70.19.173:5211", "TCP listening address")
+	var address = flag.String("add", "127.0.0.1:5211", "TCP listening address")
 	var username = flag.String("u", "default", "username")
 	flag.Parse()
 
@@ -33,10 +33,11 @@ func main() {
 	defer conn.Close()
 	log.Println("wecome to onechat :) ")
 	//登录
+
 	domain.SendReq(domain.ENTER, *username, conn)
 	log.Println("logined")
 	//先查询一次在线
-	// domain.SendReq(domain.COMMAND, "\\who", conn)
+	domain.SendReq(domain.COMMAND, "\\who", conn)
 	//控制台交互
 	ReadConsole(conn)
 }
@@ -61,7 +62,7 @@ func ReadConsole(con gnet.Conn) {
 		if strings.HasPrefix(text, "\\") {
 			action = domain.COMMAND
 		}
-		domain.SendReq(action, text, con)
+		go domain.SendReq(action, text, con)
 	}
 
 }
