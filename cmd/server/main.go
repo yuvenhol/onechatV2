@@ -16,5 +16,6 @@ func main() {
 		}
 	}()
 	onechat := new(server.OneChatServer)
-	log.Fatal(gnet.Serve(onechat, "tcp://:5211", gnet.WithMulticore(false)))
+	codec := &gnet.LineBasedFrameCodec{}
+	log.Fatal(gnet.Serve(onechat, "tcp://:5211", gnet.WithCodec(codec), gnet.WithMulticore(false)))
 }

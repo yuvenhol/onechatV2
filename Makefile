@@ -1,4 +1,4 @@
-VERSION= v2.0.2
+VERSION= v2.0.4
 build:
 	go build -o cmd/server/server_$(VERSION) cmd/server/main.go
 	go build -o cmd/client/client_$(VERSION) cmd/client/main.go

@@ -86,7 +86,11 @@ func clearSession(c gnet.Conn) {
 //处理聊天
 func handleTalk(req *domain.REQ, c gnet.Conn) {
 	sessionId := c.Context().(uint32)
-	senderSession := sessionMap[sessionId]
+	senderSession, ok := sessionMap[sessionId]
+	if !ok {
+		log.Println("senderSession is null")
+		return
+	}
 	ack := &domain.ACK{Username: senderSession.username, Content: req.Content}
 	//broadcast message
 	for k, v := range sessionMap {

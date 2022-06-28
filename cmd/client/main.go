@@ -17,8 +17,9 @@ func main() {
 	var address = flag.String("add", "127.0.0.1:5211", "TCP listening address")
 	var username = flag.String("u", "default", "username")
 	flag.Parse()
+	codec := &gnet.LineBasedFrameCodec{}
 
-	client, err := gnet.NewClient(new(client.OneChatClient))
+	client, err := gnet.NewClient(new(client.OneChatClient), gnet.WithCodec(codec))
 	if err != nil {
 		log.Fatal("连接异常")
 		return
