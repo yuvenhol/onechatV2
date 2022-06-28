@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"onechat/protocol/security"
-	"time"
 
 	"github.com/panjf2000/gnet"
 )
@@ -28,11 +27,11 @@ type ACK struct {
 }
 
 //发回应
-func SendAck(username string, content string, c gnet.Conn) {
-	if len(content) == 0 {
+func SendAck(ack *ACK, c gnet.Conn) {
+	if len(ack.Content) == 0 {
 		log.Println("发送内容为空")
+		return
 	}
-	ack := ACK{Username: username, Content: content}
 	bs, err := json.Marshal(ack)
 	if err != nil {
 		panic(err)
@@ -42,6 +41,19 @@ func SendAck(username string, content string, c gnet.Conn) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func SendAckV(acks []ACK, c gnet.Conn) {
+	qrBs := make([][]byte, 0)
+	for _, ack := range acks {
+		bs, err := json.Marshal(ack)
+		if err != nil {
+			panic(err)
+		}
+		qrBs = append(qrBs, security.Encrypt(bs))
+	}
+	c.AsyncWritev(qrBs)
+
 }
 
 //发送请求
@@ -55,11 +67,10 @@ func SendReq(action ReqAction, content string, c gnet.Conn) {
 		panic(err)
 	}
 	//加密发送
-	err = c.SendTo(security.Encrypt(bs))
+	err = c.AsyncWrite(security.Encrypt(bs))
 	if err != nil {
 		panic(err)
 	}
-	time.Sleep(100 * time.Millisecond)
 }
 
 //解析请求
@@ -67,8 +78,8 @@ func Parse2Req(frame []byte) *REQ {
 	//解密
 	req := &REQ{}
 	b := security.Decrypt(frame)
-	if json.Unmarshal(b, req) != nil {
-		log.Println("json解析异常")
+	if err := json.Unmarshal(b, req); err != nil {
+		log.Printf("json解析异常%s", err.Error())
 	}
 	return req
 }
@@ -76,8 +87,9 @@ func Parse2Req(frame []byte) *REQ {
 //解析回应
 func Parse2ACK(frame []byte) *ACK {
 	ack := &ACK{}
-	if json.Unmarshal(security.Decrypt(frame), ack) != nil {
-		log.Println("json解析异常")
+	b := security.Decrypt(frame)
+	if err := json.Unmarshal(b, ack); err != nil {
+		log.Printf("json解析异常%s\nbytes:%s", err.Error(), string(b))
 	}
 	return ack
 }
